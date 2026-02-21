@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI TikTok Content Generator</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #fe2c55; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-main { width: 100%; background-color: #fe2c55; color: white; border: none; padding: 15px; border-radius: 30px; font-size: 16px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        #container-hasil { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 250px; object-fit: cover; border-radius: 8px; }
+        .btn-skema { margin-top: 10px; background: #25f4ee; border: none; padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        
+        /* Modal Style */
+        #modalSkema { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; position: relative; }
+        .btn-action { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎬 TikTok Content Generator</h1>
+    
+    <div class="input-group">
+        <label>Nama Produk</label>
+        <input type="text" id="namaProduk" placeholder="Misal: Serum Glowing">
+    </div>
+
+    <div class="input-group">
+        <label>Foto Produk</label>
+        <input type="file" id="inputFotoProduk" accept="image/*">
+    </div>
+
+    <div class="input-group">
+        <label>Foto Artis/Talent</label>
+        <input type="file" id="inputFotoArtis" accept="image/*">
+    </div>
+
+    <button class="btn-main" onclick="generatePaduan()">Padukan & Buat Konten ✨</button>
+
+    <div id="container-hasil"></div>
+</div>
+
+<div id="modalSkema">
+    <div class="modal-content">
+        <span onclick="tutupModal()" style="position:absolute; top:10px; right:20px; cursor:pointer; font-size:28px;">&times;</span>
+        <h2 style="color:#fe2c55;">📋 Rencana Konten</h2>
+        <hr>
+        <div id="isiSkema" style="line-height: 1.6;"></div>
+        <button class="btn-action" style="background:#25f4ee;" onclick="salinTeks()">📋 Salin Narasi</button>
+        <button class="btn-action" style="background:#ffc107;" onclick="unduhRencana()">📥 Unduh (.txt)</button>
+    </div>
+</div>
+
+<script>
+    let teksNarasiGlobal = "";
+
+    function generatePaduan() {
+        const fileProduk = document.getElementById('inputFotoProduk').files[0];
+        const container = document.getElementById('container-hasil');
+        
+        if (!fileProduk) {
+            alert("Pilih foto produk dulu ya!");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            container.innerHTML = "";
+            for (let i = 1; i <= 3; i++) {
+                const labelGaya = i === 1 ? "Hard Sell" : i === 2 ? "Storytelling" : "Review";
+                const kartu = document.createElement('div');
+                kartu.className = 'card';
+                kartu.innerHTML = `
+                    <img src="${e.target.result}">
+                    <p><strong>Gaya: ${labelGaya}</strong></p>
+                    <button class="btn-skema" onclick="tampilkanSkema(${i})">Buka Skema 🎬</button>
+                `;
+                container.appendChild(kartu);
+            }
+        }
+        reader.readAsDataURL(fileProduk);
+    }
+
+    function tampilkanSkema(nomor) {
+        const modal = document.getElementById('modalSkema');
+        const isi = document.getElementById('isiSkema');
+        let narasi, pose, hashtag;
+
+        if(nomor === 1) {
+            narasi = "Beli sekarang atau nyesel! Diskon 50% cuma hari ini. Klik keranjang!";
+            pose = "Menunjuk produk dengan cepat dan semangat.";
+            hashtag = "#promosi #racuntiktok #foryou";
+        } else if(nomor === 2) {
+            narasi = "Dulu kulitku kusam banget, sampai akhirnya aku ketemu produk ini...";
+            pose = "Wajah sedih lalu berubah jadi sangat glowing.";
+            hashtag = "#storytime #glowup #skincare";
+        } else {
+            narasi = "Review jujur: Teksturnya ringan banget, gak lengket sama sekali!";
+            pose = "Mengoleskan produk ke tangan secara close-up.";
+            hashtag = "#reviewjujur #beautyhacks #fyp";
+        }
+
+        teksNarasiGlobal = narasi;
+        isi.innerHTML = `<p><strong>Narasi:</strong> "${narasi}"</p><p><strong>Pose:</strong> ${pose}</p><p><strong>Hashtag:</strong> ${hashtag}</p>`;
+        modal.style.display = 'flex';
+    }
+
+    function tutupModal() { document.getElementById('modalSkema').style.display = 'none'; }
+
+    function salinTeks() {
+        navigator.clipboard.writeText(teksNarasiGlobal);
+        alert("Narasi disalin! ✅");
+    }
+
+    function unduhRencana() {
+        const teks = document.getElementById('isiSkema').innerText;
+        const blob = new Blob([teks], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'rencana_konten.txt';
+        link.click();
+    }
+</script>
+</body>
+</html>
